@@ -1,0 +1,42 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = Simple
+  FILE_GUID                      = cab058df-e938-4f85-8978-1f7e6aabdb96
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = test
+
+[Sources.common]
+  simple.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+  
+[LibraryClasses]
+  UefiBootServicesTableLib
+  UefiApplicationEntryPoint
+  DebugLib
+  PrintLib
+  UefiLib
+  MemoryAllocationLib
+  DebugLib
+  BaseMemoryLib
+  BaseLib
+  UefiBootServicesTableLib
+  DevicePathLib
+  UefiRuntimeServicesTableLib
+
+[Protocols]
+  gEfiMpServiceProtocolGuid
+
+[Depex]
+  gEfiMpServiceProtocolGuid
+  
+[Pcd]
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuInitIpiDelayInMicroSeconds  ## SOMETIMES_CONSUMES
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuLocalApicBaseAddress        ## SOMETIMES_CONSUMES
+
+
+
