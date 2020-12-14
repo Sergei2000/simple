@@ -1,34 +1,9 @@
 use16
 org 1000h
 
-
-xor ax,ax;
-mov ax,0x10;
-mov ds,ax;
-;mov byte[ds:00],1; меняю область памяти для проверки передачи управления
-
-
-
-xor eax,eax;
-mov ax,100h
-mov ds, ax;
-xor eax,eax;
-mov esi,eax;
-
-mov ax,moy_cod;
-mov si,ax;
-
-xor eax,eax;
-mov ax,2000h;
-mov es,ax;
-xor ax,ax;
-mov di,ax;
-
-xor ecx,ecx;
-mov cl,byte[code_length];
-
-rep movsb;
-
+PML4_addr equ 200000h
+PDPE_addr equ 201000h
+PDE_addr  equ 202000h
 cli;
 xor ax,ax
 mov ds,ax;
@@ -48,13 +23,39 @@ use32
 mov ax,16;
 mov es,ax;
 mov ds,ax;
-mov byte[ds:0x100],1;
+;mov byte[ds:0x100],1;
 
+
+mov dword [es:PDE_addr], 10000011b    ; элемент каталога страниц
+mov dword [es:PDE_addr+4], 0
+mov dword [es:PDPE_addr], PDE_addr or 3    ; элемент таблицы указателей на каталоги страниц
+mov dword [es:PDPE_addr+4], 0
+mov dword [es:PML4_addr], PDPE_addr or 3   ; элемент в 4ом уровне
+mov dword [es:PML4_addr+4], 0
+
+mov eax, PML4_addr
+mov cr3, eax		;базовый адрес цепочки таблиц в cr3
+
+mov ecx, 0xC0000080
+rdmsr
+bts eax,8
+wrmsr			;режим longmode 
+
+mov eax, cr0
+;bts eax, 0
+bts eax, 31 ; табличная трансляция
+mov cr0, eax
+jmp LM_CODE_START
+
+LM_CODE_START:
+use64
+mov rdi,0x100;
+mov byte[rdi],1
 jmp $;
 
-moy_cod_end:
 
-code_length db moy_cod_end-moy_cod; 
+
+;code_length db moy_cod_end-moy_cod; 
 
 
 align 8
