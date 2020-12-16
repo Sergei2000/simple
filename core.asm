@@ -23,8 +23,6 @@ use32
 mov ax,16;
 mov es,ax;
 mov ds,ax;
-;mov byte[ds:0x100],1;
-
 
 mov dword [es:PDE_addr], 10000011b    ; элемент каталога страниц
 mov dword [es:PDE_addr+4], 0
@@ -42,7 +40,6 @@ bts eax,8
 wrmsr			;режим longmode 
 
 mov eax, cr0
-;bts eax, 0
 bts eax, 31 ; табличная трансляция
 mov cr0, eax
 jmp LM_CODE_START
@@ -50,12 +47,18 @@ jmp LM_CODE_START
 LM_CODE_START:
 use64
 mov rdi,0x100;
-mov byte[rdi],1
+mov byte[rdi],1;
+
+mov rdi,0x80000000;
+add rdi,100000;
+mov rcx,0x1000;
+cikl:
+mov word[rdi],0xe144;
+inc rdi;
+inc rdi;
+loop cikl;
 jmp $;
 
-
-
-;code_length db moy_cod_end-moy_cod; 
 
 
 align 8
@@ -68,3 +71,4 @@ gdt_reg:
 	.size dw gdtend-gdt-1;
 	.address dd gdt;
 
+video_buf dq 0;
