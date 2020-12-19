@@ -56,6 +56,7 @@ unsigned int core_bin_len = 230;
 
 
 
+
 void gdt_print(struct gdtr *location)
 {
 	UINTN i,j;
@@ -256,21 +257,26 @@ test (
   
   vbuf=(volatile UINT32*)0x100;//зануляю область памяти, чтобы потом изменить её в асм коде
   vbuf[0]=0;
-  Send_init_sipi_sipi(2,gop);
-  
-  
+  Send_init_sipi_sipi(1,gop);
+  int num_AP_cores=3;
+  int current_core=1;
+
   for (;;)
   {
-  	
-    if(vbuf[0]==0)
+  	if(vbuf[0]==0)
     {
- 	    //printvalue(gop->Mode->FrameBufferBase,BLUE,200000);
+      //printvalue(gop->Mode->FrameBufferBase,BLUE,200000);
     }
     else{
-
-        printvalue(gop->Mode->FrameBufferBase,BLUE,200000);
-        Send_init_sipi_sipi(1,gop);
+        if (current_core<num_AP_cores)
+        {
+          current_core+=1;
+          vbuf[0]=0;
+          Send_init_sipi_sipi(current_core,gop);
+        }
+        //printvalue(gop->Mode->FrameBufferBase,BLUE,200000);  
     }
+
   } 
   return EFI_SUCCESS;
 }
