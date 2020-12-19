@@ -47,16 +47,21 @@ jmp LM_CODE_START
 LM_CODE_START:
 use64
 mov rdi,0x100;
-mov byte[rdi],1;
+mov byte[rdi],0;
 
-mov rdi,0x80000000;
+mov rdi,80000100h; это адрес видеобуфера
 add rdi,100000;
 mov rcx,0x1000;
 cikl:
 mov word[rdi],0xe144;
+;mov [video_buf],0xe144;
 inc rdi;
-inc rdi;
+inc rdi; 
 loop cikl;
+mov rdi,0x100;
+mov word[rdi],0xffff;
+add rdi,2
+mov word[rdi],0xffff;
 jmp $;
 
 
@@ -71,4 +76,3 @@ gdt_reg:
 	.size dw gdtend-gdt-1;
 	.address dd gdt;
 
-video_buf dq 0;
